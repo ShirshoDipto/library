@@ -49,13 +49,15 @@ function displayBook(bookToDisplay, dataValue) {
     bookCard.appendChild(readAndDelete);
 
     const readStatus = document.createElement('button');
-    readStatus.classList.toggle('read-status');
     readStatus.setAttribute('data-value', dataValue);
+    readStatus.setAttribute('id', 'read-status');
     if (bookToDisplay.isRead) {
         readStatus.textContent = "Read";
+        readStatus.classList.add('read-status-yes');
     }
     else {
         readStatus.textContent = "Not Read";
+        readStatus.classList.add('read-status-no');
     }
     readAndDelete.appendChild(readStatus);
 
@@ -129,7 +131,7 @@ function buildUpform(e) {
 
     const pagesLabel = document.createElement('label');
     pagesLabel.setAttribute('for', 'pages');
-    pagesLabel.textContent = 'total pages';
+    pagesLabel.textContent = 'Total Pages';
 
     const pagesInput = document.createElement('input');
     pagesInput.setAttribute('type', 'text');
@@ -158,12 +160,12 @@ function buildUpform(e) {
 
     const submitButton = document.createElement('button');
     submitButton.setAttribute('type', 'submit');
-    submitButton.textContent = 'add book';
+    submitButton.textContent = 'Add Book';
     theForm.appendChild(submitButton);
 
     const cancelButton = document.createElement('button');
     cancelButton.setAttribute('type', 'button');
-    cancelButton.textContent = 'cancel';
+    cancelButton.textContent = 'Cancel';
     cancelButton.classList.toggle('cancel');
     theForm.appendChild(cancelButton);
 
@@ -178,14 +180,18 @@ function buildUpform(e) {
 
 function changeReadStatus(readButton) {
     const index = parseInt(readButton.getAttribute('data-value'));
-    
+
     if (myLibrary[index].isRead === true) {
         myLibrary[index].isRead = false;
         readButton.textContent = 'Not Read';
+        readButton.classList.remove('read-status-yes');
+        readButton.classList.add('read-status-no');
     }
     else {
         myLibrary[index].isRead = true;
         readButton.textContent = 'Read';
+        readButton.classList.remove('read-status-no');
+        readButton.classList.add('read-status-yes');
     }
     // console.log(myLibrary);
 }
@@ -200,20 +206,22 @@ function deleteAndUpdateDoms(theDom) {
     myLibrary.splice(index, 1);
 
     const remainingBooks = Array.from(document.querySelectorAll('.book-card'));
-    const remainingStatusButton = Array.from(document.querySelectorAll('.read-status'));
+    const remainingStatusButton = Array.from(document.querySelectorAll('#read-status'));
+    const remainingDeleteButton = Array.from(document.querySelectorAll('.delete-book'));
 
     for (let i = 0; i < myLibrary.length; i++) {
         remainingBooks[i].setAttribute('data-value', `${i}`);
         remainingStatusButton[i].setAttribute('data-value', `${i}`);
+        remainingDeleteButton[i].setAttribute('data-value', `${i}`);
     }
-    // console.log(allBooks);
-    // console.log(myLibrary);
+    console.log(allBooks);
+    console.log(myLibrary);
 }
 
 
 function takeEvents(e) {
 
-    if (e.target.classList.value === 'newBook' && theForm === undefined) {
+    if ((e.target.classList.value === 'newBook' || e.target.getAttribute('src') === 'plus-thick.png' || e.target.textContent === 'NEW BOOK') && theForm === undefined) {
         buildUpform(e);
     }
 
@@ -231,7 +239,7 @@ function takeEvents(e) {
         theForm = undefined;
     }
 
-    else if (e.target.classList.value === 'read-status') {
+    else if (e.target.classList.value === 'read-status-yes' || e.target.classList.value === 'read-status-no') {
         changeReadStatus(e.target);
     }
 
@@ -239,10 +247,6 @@ function takeEvents(e) {
         deleteAndUpdateDoms(e.target);
     }
 }
-
-
-
-
 
 
 // main function
@@ -260,53 +264,15 @@ const allBooks = document.querySelector('.all-books');
 const addBooks = document.querySelector('add-books');
 const bookDescriptions = document.querySelector(".book-descriptions");
 const newBook = document.querySelector(".newBook");
+// let insideButton = Array.from(document.querySelectorAll('.newBook > *'));
+// insideButton.push(newBook);
+// console.log(insideButton);
 
 document.addEventListener('click', takeEvents);
-
-
-
-
+// insideButton.forEach(element => {
+//     element.addEventListener('click', takeEvents, {capture: true});
+// });
 
 
 
 // ######################## TEMPLATES FOR MY HTML #########################
-
-/* 
-<div class="book-card">
-    <div class="book-title">Jerusalem in the Quran</div>
-    <div class="book-author">Imran N. Hosein</div>
-    <div class="pages">Pages: 220</div>
-    <div class="read-and-delete">
-        <div class="read-yet">
-            <label for="read-status">read?</label>
-            <input type="checkbox" id="read-status", name="read-status">
-        </div>
-        <button class="delete-book">Delete</button>
-    </div>
-</div> 
-*/
-
-
-
-
-/* 
-<form action="#" id="form">
-<div class="title">
-    <label for="title">Title</label>
-    <input type="text" id="title" name="title" required>
-</div>
-<div class="author">
-    <label for="author">Author</label>
-    <input type="text" id="author" name="author" required>
-</div>
-<div class="pages">
-    <label for="pages">Pages #</label>
-    <input type="number" id="pages" name="pages" required>
-</div>
-<div class="title">
-    <label for="read">Have you read the book?</label>
-    <input type="checkbox" id="read" name="read" value="read">
-</div>
-<button type="submit">add book</button>
-</form> 
-*/
